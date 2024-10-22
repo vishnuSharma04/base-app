@@ -31,7 +31,7 @@ public class DocTemplate implements KogitoWorkItemHandler {
         try {
             appProps.load(inputStream);
             templateURL = appProps.get("app.urls.templateURL").toString(); 
-            workspace = properties.get("ifs.app.workspace").toString();
+            workspace = appProps.get("ifs.app.workspace").toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
