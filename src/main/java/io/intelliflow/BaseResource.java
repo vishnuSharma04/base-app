@@ -188,6 +188,31 @@ public class BaseResource {
         }
     }
 
+    @GET
+    @Path("/page/content/id/{pageId}")
+    public ResponseModel fetchPageContentWithouRole(@PathParam("pageId") String pageId) {
+        ResponseModel responseModel = new ResponseModel();
+  
+            try {
+ 
+                    String response = IOUtils.toString(
+                            getClass().getClassLoader().getResourceAsStream("page/" + pageId),
+                            StandardCharsets.UTF_8
+                    );
+                    if(!response.isEmpty()){
+                        return new ResponseModel("Data Found",response,String.valueOf(Status.OK.getCode()));
+                    }else{
+                        return new ResponseModel("No Data Found",null,String.valueOf(Status.NO_CONTENT.getCode()));
+                    }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseModel("page content not found for role id : "+roleid,null,String.valueOf(Status.INTERNAL_SERVER_ERROR.getCode()));
+            }
+
+    }
+
     public List<String> getFiles(String fileType, boolean ifMeta) throws CustomException {
         List<String> files = new ArrayList<String>();
         String filePath = null;
