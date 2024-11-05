@@ -208,7 +208,7 @@ public class BaseResource {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                return new ResponseModel("page content not found for role id : "+roleid,null,String.valueOf(Status.INTERNAL_SERVER_ERROR.getCode()));
+                return new ResponseModel("page content not found for role id : "+pageId,null,String.valueOf(Status.INTERNAL_SERVER_ERROR.getCode()));
             }
 
     }
