@@ -452,7 +452,6 @@ public class DataOperations implements KogitoWorkItemHandler {
                             ClientCollectionValue addressCollectionValue = constructComplexObjects(dataObject);
                             newEntity.getProperties()
                                     .add(new ClientPropertyImpl(dataField.getName(), addressCollectionValue));
-                            System.out.println("Complex Types Added");
                         }
                     } else {
                         // Adding values to be updated to entity
@@ -635,7 +634,7 @@ public class DataOperations implements KogitoWorkItemHandler {
                             ((ArrayList) dataObject).get(0).getClass().getName());
                     ClientPrimitiveValue value = null;
                     // For List of Primitive or String values
-                    if (((ArrayList) dataObject).get(i).getClass().getName().equals("java.lang.String") || ((ArrayList) dataObject).get(i).getClass().getName().equals("java.lang.Integer") || ((ArrayList) dataObject).get(i).getClass().getName().equals("java.lang.Boolean") ||
+                    if (((ArrayList) dataObject).get(i).getClass().getName().equals("java.lang.String") ||
                             ((ArrayList) dataObject).get(i).getClass().isPrimitive()) {
                         String dataType = ((ArrayList) dataObject).get(i).getClass().getName();
                         Object valueObject = ((ArrayList) dataObject).get(i);
@@ -674,7 +673,7 @@ public class DataOperations implements KogitoWorkItemHandler {
                                             complexValue.add(new ClientPropertyImpl(dataField.getName(),
                                                     constructComplexObjects(valueObject)));
                                         }
-                                    } else if (dataType.equals("java.lang.String") ||
+                                    } else if (dataType.equals("java.lang.String") ||dataType.equals("java.lang.Boolean") ||dataType.equals("java.lang.Integer") ||
                                             dataType.getClass().isPrimitive()) {
                                         // Adding values to be updated to entity
                                         if (dataType.equals("java.lang.Boolean") || dataType.equals("boolean")) {
