@@ -634,31 +634,32 @@ public class DataOperations implements KogitoWorkItemHandler {
                     ClientComplexValue complexValue = client.getObjectFactory().newComplexValue(
                             ((ArrayList) dataObject).get(0).getClass().getName());
                     ClientPrimitiveValue value = null;
-
                     // For List of Primitive or String values
-                    if (((ArrayList) dataObject).get(i).getClass().getName().equals("java.lang.String") ||
+                    if (((ArrayList) dataObject).get(i).getClass().getName().equals("java.lang.String") || ((ArrayList) dataObject).get(i).getClass().getName().equals("java.lang.Integer") || ((ArrayList) dataObject).get(i).getClass().getName().equals("java.lang.Boolean") ||
                             ((ArrayList) dataObject).get(i).getClass().isPrimitive()) {
-
-                        Log.info("Inner List of Primitive Types and Strings");
                         String dataType = ((ArrayList) dataObject).get(i).getClass().getName();
                         Object valueObject = ((ArrayList) dataObject).get(i);
-                        if (dataType.equals("java.lang.Boolean")) {
-                            value = client.getObjectFactory().newPrimitiveValueBuilder()
-                                    .buildBoolean((Boolean) valueObject);
-                        } else if (dataType.equals("java.lang.Integer")) {
-                            value = client.getObjectFactory().newPrimitiveValueBuilder()
-                                    .buildInt32((Integer) valueObject);
-                        } else if (dataType.equals("java.lang.Float")) {
-                            value = client.getObjectFactory().newPrimitiveValueBuilder().setType(EdmPrimitiveTypeKind.Single).setValue(valueObject).build();
-                            //value = client.getObjectFactory().newPrimitiveValueBuilder()
-                                    //.buildDouble((Double) valueObject);
-                        } else if (dataType.equals("java.lang.Long")) {
-                            value = client.getObjectFactory().newPrimitiveValueBuilder().buildInt64((Long) valueObject);
-                        } else {
-                            value = client.getObjectFactory().newPrimitiveValueBuilder()
-                                    .buildString(valueObject.toString());
+                        if (valueObject != null) {
+                            if (dataType.equals("java.lang.Boolean")) {
+                                value = client.getObjectFactory().newPrimitiveValueBuilder()
+                                        .buildBoolean((Boolean) valueObject);
+                            } else if (dataType.equals("java.lang.Integer")) {
+                                value = client.getObjectFactory().newPrimitiveValueBuilder()
+                                        .buildInt32((Integer) valueObject);
+                            } else if (dataType.equals("java.lang.Float")) {
+                                value = client.getObjectFactory().newPrimitiveValueBuilder().setType(EdmPrimitiveTypeKind.Single).setValue(valueObject).build();
+                                //value = client.getObjectFactory().newPrimitiveValueBuilder()
+                                        //.buildDouble((Double) valueObject);
+                            } else if (dataType.equals("java.lang.Long")) {
+                                value = client.getObjectFactory().newPrimitiveValueBuilder().buildInt64((Long) valueObject);
+                            } else {
+                                value = client.getObjectFactory().newPrimitiveValueBuilder()
+                                        .buildString(valueObject.toString());
+                            }
+                            addressCollectionValue.add(value);
                         }
-                        addressCollectionValue.add(value);
+
+
                     } else {
                         // For List of non-Primitive Objects
                         for (Field dataField : ((ArrayList) dataObject).get(i).getClass().getDeclaredFields()) {
@@ -667,39 +668,40 @@ public class DataOperations implements KogitoWorkItemHandler {
                                     dataField.getName() != "_id") {
                                 String dataType = dataField.getType().getName();
                                 Object valueObject = dataField.get(((ArrayList) dataObject).get(i));
-
-                                if (dataType.equals("java.util.List")) {
-                                    if (Objects.nonNull(valueObject) && !((ArrayList) valueObject).isEmpty()) {
-                                        complexValue.add(new ClientPropertyImpl(dataField.getName(),
-                                                constructComplexObjects(valueObject)));
-                                    }
-                                } else if (dataType.equals("java.lang.String") ||
-                                        dataType.getClass().isPrimitive()) {
-                                    // Adding values to be updated to entity
-                                    if (dataType.equals("java.lang.Boolean")) {
-                                        value = client.getObjectFactory().newPrimitiveValueBuilder()
-                                                .buildBoolean((Boolean) valueObject);
-                                    } else if (dataType.equals("java.lang.Integer")) {
-                                        value = client.getObjectFactory().newPrimitiveValueBuilder()
-                                                .buildInt32((Integer) valueObject);
-                                    } else if (dataType.equals("java.lang.Float")) {
-                                        value = client.getObjectFactory().newPrimitiveValueBuilder()
-                                                .setType(EdmPrimitiveTypeKind.Single).setValue(valueObject).build();
-                                        //value = client.getObjectFactory().newPrimitiveValueBuilder()
-                                                //.buildDouble((Double) valueObject);
-                                    } else if (dataType.equals("java.lang.Long")) {
-                                        value = client.getObjectFactory().newPrimitiveValueBuilder()
-                                                .buildInt64((Long) valueObject);
+                                if (Objects.nonNull(valueObject)) {
+                                    if (dataType.equals("java.util.List")) {
+                                        if (!((ArrayList) valueObject).isEmpty()) {
+                                            complexValue.add(new ClientPropertyImpl(dataField.getName(),
+                                                    constructComplexObjects(valueObject)));
+                                        }
+                                    } else if (dataType.equals("java.lang.String") ||
+                                            dataType.getClass().isPrimitive()) {
+                                        // Adding values to be updated to entity
+                                        if (dataType.equals("java.lang.Boolean") || dataType.equals("boolean")) {
+                                            value = client.getObjectFactory().newPrimitiveValueBuilder()
+                                                    .buildBoolean((Boolean) valueObject);
+                                        } else if (dataType.equals("java.lang.Integer") || dataType.equals("int")) {
+                                            value = client.getObjectFactory().newPrimitiveValueBuilder()
+                                                    .buildInt32((Integer) valueObject);
+                                        } else if (dataType.equals("java.lang.Float")) {
+                                            value = client.getObjectFactory().newPrimitiveValueBuilder()
+                                                    .setType(EdmPrimitiveTypeKind.Single).setValue(valueObject).build();
+                                            //value = client.getObjectFactory().newPrimitiveValueBuilder()
+                                                    //.buildDouble((Double) valueObject);
+                                        } else if (dataType.equals("java.lang.Long")) {
+                                            value = client.getObjectFactory().newPrimitiveValueBuilder()
+                                                    .buildInt64((Long) valueObject);
+                                        } else {
+                                            value = client.getObjectFactory().newPrimitiveValueBuilder()
+                                                    .buildString(valueObject.toString());
+                                        }
+                                        complexValue.add(new ClientPropertyImpl(dataField.getName(), value));
                                     } else {
-                                        value = client.getObjectFactory().newPrimitiveValueBuilder()
-                                                .buildString(valueObject.toString());
+                                        ArrayList<Object> temPList = new ArrayList<>();
+                                        temPList.add(valueObject);
+                                        complexValue.add(new ClientPropertyImpl(dataField.getName(),
+                                                constructComplexObjects(temPList)));
                                     }
-                                    complexValue.add(new ClientPropertyImpl(dataField.getName(), value));
-                                } else if (Objects.nonNull(valueObject)) {
-                                    ArrayList<Object> temPList = new ArrayList<>();
-                                    temPList.add(valueObject);
-                                    complexValue.add(new ClientPropertyImpl(dataField.getName(),
-                                            constructComplexObjects(temPList)));
                                 }
                             }
                         }
